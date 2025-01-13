@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+    themes: all;
+}
+
+/* include these classes by default (needed for the class switch) */
+.__safelist {
+    @apply invisible;
+}

@@ -1,0 +1,10 @@
+FROM oven/bun:1.2.8-alpine
+
+RUN apk add --no-cache postgresql-client
+
+WORKDIR /app
+
+RUN bun install -g @vbilopav/pgmigrations@0.43.0
+COPY ./config/pgmigrations.js ./
+COPY ./config/.env ./config/.env
+COPY ./backend ./backend

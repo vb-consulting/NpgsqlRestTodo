@@ -1,0 +1,10 @@
+{
+    "name": "worker",
+    "version": "1.0.0",
+    "type": "module",
+    "dependencies": {
+        "cron": "^4.1.0",
+        "cronstrue": "^2.56.0",
+        "postgres": "^3.4.5"
+    }
+}

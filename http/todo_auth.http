@@ -1,0 +1,72 @@
+@host=http://0.0.0.0:5000
+
+// function auth.confirm_email_code(
+//     _code text,
+//     _email text,
+//     _analytics_data jsonb DEFAULT '{}'::jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns record
+//
+// comment on function auth.confirm_email_code is 'HTTP POST
+// Anonymous
+// Login';
+POST {{host}}/api/auth/confirm-email-code
+content-type: application/json
+
+{
+    "code": "ABC",
+    "email": "XYZ",
+    "analyticsData": {},
+    "ipAddress": "ABC"
+}
+
+###
+
+// function auth.login(
+//     _username text,
+//     _password text,
+//     _analytics_data jsonb DEFAULT '{}'::jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns record
+//
+// comment on function auth.login is 'HTTP POST
+// Login
+// Anonymous';
+POST {{host}}/api/auth/login
+content-type: application/json
+
+{
+    "username": "ABC",
+    "password": "XYZ",
+    "analyticsData": {},
+    "ipAddress": "ABC"
+}
+
+###
+
+// function auth.register(
+//     _email text,
+//     _password text,
+//     _repeat text,
+//     _analytics_data jsonb DEFAULT '{}'::jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns record
+//
+// comment on function auth.register is 'HTTP POST
+// Anonymous';
+POST {{host}}/api/auth/register
+content-type: application/json
+
+{
+    "email": "ABC",
+    "password": "XYZ",
+    "repeat": "IJK",
+    "analyticsData": {},
+    "ipAddress": "XYZ"
+}
+
+###
+

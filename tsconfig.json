@@ -1,0 +1,38 @@
+{
+    "extends": "@tsconfig/svelte/tsconfig.json",
+    "include": ["src/**/*"],
+    "exclude": [
+        "backend/*",
+        "worker/*",
+        "config/*",
+        "http/*",
+        "logs/*",
+        "scripts/*",
+        "node_modules/*",
+        "__sapper__/*",
+        "dist/*",
+        "wwwroot/*",
+        ".vscode/*",
+        ".vs/*",
+    ],
+
+    "compilerOptions": {
+        "target": "ES2022",
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "baseUrl": ".",
+        "paths": {
+            "$api/*": ["src/api/*"],
+            "$lib/*": ["src/app/lib/*"],
+            "$part/*": ["src/app/part/*"]
+        },
+        "skipLibCheck": true,
+        "types": ["svelte"],
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+    }
+}
