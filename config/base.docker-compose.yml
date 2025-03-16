@@ -1,0 +1,89 @@
+# DO NOT RUN THIS FILE DIRECTLY
+# This file is included in other docker-compose files
+# Use docker-compose.dev.yml or docker-compose.yml instead
+
+# This file is used to define common services and volumes
+# that are shared between different docker-compose files
+
+services:
+  rollup:
+    build:
+      context: ../
+      dockerfile: ./config/Dockerfile.rollup
+    volumes: 
+      - ../dist:/app/dist
+      - ../src:/app/src
+      - ../config/npgsqlrest.id.json:/app/config/npgsqlrest.id.json
+
+  npgsqlrest:
+    build:
+      context: ../
+      dockerfile: ./config/Dockerfile.npgsqlrest
+    environment:
+      - PGHOST=${PGHOST}
+      - PGPORT=${PGPORT}
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${APP_USER}
+      - PGPASSWORD=${APP_PASSWORD}
+    volumes:
+      - ../logs:/app/logs
+      - ../config/npgsqlrest.id.json:/app/npgsqlrest.id.json
+    ports:
+      - "5000:5000"
+    depends_on:
+      rollup:
+        condition: service_completed_successfully
+
+  npgsqlrest-dev:
+    build:
+      context: ../
+      dockerfile: ./config/Dockerfile.npgsqlrest.dev
+    environment:
+      - PGHOST=${PGHOST}
+      - PGPORT=${PGPORT}
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${APP_USER}
+      - PGPASSWORD=${APP_PASSWORD}
+    volumes:
+      - ../logs:/app/logs
+      - ../http:/app/http
+      - ../src/api:/app/src/api
+      - ../dist:/app/dist
+      - ../config/npgsqlrest.id.json:/app/npgsqlrest.id.json
+    ports:
+      - "5000:5000"
+    depends_on:
+        pgmigrations:
+          condition: service_completed_successfully
+
+  pgmigrations:
+    build:
+      context: ../
+      dockerfile: ./config/Dockerfile.pgmigrations
+    environment:
+      - PGHOST=${PGHOST}
+      - PGPORT=${PGPORT}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - APP_USER=${APP_USER}
+      - APP_PASSWORD=${APP_PASSWORD}
+    entrypoint: [ "pgmigrations", "up" ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17
+    ports:
+      - "${PGPORT}:${PGPORT}"
+    environment:
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

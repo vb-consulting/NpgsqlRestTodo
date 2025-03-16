@@ -1,0 +1,39 @@
+#
+# Production docker-compose file:
+# 1. Builds postgres container
+# 2. Builds pgmigrations container and runs migration UP (if needed), with tests.
+# 3. Builds rollup container and runs minimized build to dist.
+# 4. Builds npgsqlrest container and npgsqlrest middleware.
+#
+
+services:
+  npgsqlrest:
+    extends:
+      file: ./base.docker-compose.yml
+      service: npgsqlrest
+
+  rollup:
+    extends:
+      file: ./base.docker-compose.yml
+      service: rollup
+    environment:
+      - NODE_ENV=production
+    entrypoint: ["bun", "run", "build"]
+    depends_on:
+      pgmigrations:
+        condition: service_completed_successfully
+
+  pgmigrations:
+    extends:
+      file: ./base.docker-compose.yml
+      service: pgmigrations
+
+  postgres:
+    extends:
+      file: ./base.docker-compose.yml
+      service: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

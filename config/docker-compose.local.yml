@@ -1,0 +1,20 @@
+services:
+  npgsqlrest-dev:
+    extends:
+      file: ./base.docker-compose.yml
+      service: npgsqlrest-dev
+
+  pgmigrations:
+    extends:
+      file: ./base.docker-compose.yml
+      service: pgmigrations
+
+  postgres:
+    extends:
+      file: ./base.docker-compose.yml
+      service: postgres
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_dev:
