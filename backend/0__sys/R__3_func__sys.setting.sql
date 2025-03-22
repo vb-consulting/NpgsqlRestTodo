@@ -12,8 +12,9 @@ parallel safe
 as
 $$
 select case _key
-    when 'now' then sys.get_current_setting('public.now', now()::text)
-    when 'muted' then sys.get_current_setting('public.muted', '${PUBLIC_MUTED}')
+    when 'now' then sys.get_current_setting('sys.now', now()::text)
+    when 'muted' then sys.get_current_setting('sys.muted', '${SYS_MUTED}')
+    when 'env' then sys.get_current_setting('sys.env', '${SYS_ENV}')
     else null
 end;
 $$;

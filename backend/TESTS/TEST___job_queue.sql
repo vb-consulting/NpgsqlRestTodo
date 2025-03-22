@@ -14,7 +14,7 @@ declare
     _result boolean;
 begin
     -- mock the now setting for this test transaction
-    call sys.set_current_setting('public.now', _now::text);
+    call sys.set_current_setting('sys.now', _now::text);
     
     -- Store the transaction ID for later use
     _worker_id = txid_current();
@@ -60,7 +60,7 @@ begin
     
     -- Set now time ahead to verify scheduled_for gets updated
     _now = _now + interval '5 minutes';
-    call sys.set_current_setting('public.now', _now::text);
+    call sys.set_current_setting('sys.now', _now::text);
     
     _result = app.fail_job(_job_id2, txid_current(), interval '10 minutes');
     assert _result = true, 'Expected fail_job to return true';
@@ -86,7 +86,7 @@ begin
     
     -- Test 6: Jobs are dequeued by priority order
     _now = _now + interval '1 hour';
-    call sys.set_current_setting('public.now', _now::text);
+    call sys.set_current_setting('sys.now', _now::text);
     
     -- Create jobs with different priorities
     _job_id = app.enqueue_job('{"task":"low_priority"}'::jsonb, -1);
@@ -123,7 +123,7 @@ begin
     
     -- Test 8: Future scheduled jobs
     _now = _now + interval '2 hours';
-    call sys.set_current_setting('public.now', _now::text);
+    call sys.set_current_setting('sys.now', _now::text);
     
     -- Create a job scheduled for future
     _job_id = app.enqueue_job(_test_payload, 0, _now + interval '1 hour');
@@ -137,7 +137,7 @@ begin
     
     -- Fast forward time
     _now = _now + interval '2 hours';
-    call sys.set_current_setting('public.now', _now::text);
+    call sys.set_current_setting('sys.now', _now::text);
     
     -- Now the job should be available
     _dequeued_count = 0;

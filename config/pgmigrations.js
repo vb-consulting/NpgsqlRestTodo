@@ -17,9 +17,9 @@ module.exports = {
     repetablePrefix: "R",
     // repeatable before versioned migrations "R_before__name.sql" 
     repetableBeforePrefix: "_R",
-    // after migrations "_B__name.sql", run always
+    // before migrations "_B__name.sql", run always
     beforePrefix: "_B",
-    // before migrations "_A__name.sql", run always
+    // after migrations "_A__name.sql", run always
     afterPrefix: "_A",
     // separator between prefix and name
     separatorPrefix: "__",

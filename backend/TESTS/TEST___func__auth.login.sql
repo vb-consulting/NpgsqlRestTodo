@@ -5,7 +5,7 @@ declare
     _now timestamptz = '2020-01-01 00:00:00';
 begin
     -- mute the logs for this test transaction
-    call sys.set_current_setting('public.muted', 'true');
+    call sys.set_current_setting('sys.muted', 'true');
 
     select * into _record from auth.login('xx', '');
     assert _record.status = 404, 'Invalid email should return 404';
@@ -14,7 +14,7 @@ begin
     assert _record.status = 404, 'User does not exist should return 404';
 
     -- mock the now setting for this test transaction
-    call sys.set_current_setting('public.now', _now::text);
+    call sys.set_current_setting('sys.now', _now::text);
     insert into auth_users (email, expires_at) values ('user@expired', _now - interval '1 day');
     select * into _record from auth.login('user@expired', '');
     assert _record.status = 404, 'User expired should return 404';
@@ -23,7 +23,7 @@ begin
     select * into _record from auth.login('user@inactive', '');
     assert _record.status = 404, 'User inactive should return 404';
     -- reset the now setting
-    call sys.set_current_setting('public.now', null);
+    call sys.set_current_setting('sys.now', null);
 
     insert into auth_users (email, confirmed) values ('user@unconfirmed', false);
     select * into _record from auth.login('user@unconfirmed', '');

@@ -44,29 +44,29 @@ declare
     _schema name;
     _table name;
 begin
-    if position('.' in _name::text) = 0 then
+    if '.' not in _name::text then
         _schema = 'public';
         _table = _name::text;
     else
         _schema = split_part(_name::text, '.', 1);
         _table = split_part(_name::text, '.', 2);
     end if;
-    if not exists(
+
+    if not exists (
         select 1 
         from information_schema.columns 
-        where table_schema = _schema and table_name = _table and column_name = 'updated_at'
+        where table_schema = _schema 
+        and table_name = _table 
+        and column_name = 'updated_at'
     ) then
-        raise exception 'Column updated_at on table % does not exists!', _name;
+        raise exception 'Table % needs an updated_at column!', _name;
     end if;
+
     execute format($sql$
         create trigger update_%s_%s_update_at
         before update on %s
         for each row
         execute function sys.update_at_trigger()
-    $sql$,
-        _schema,
-        _table,
-        _name
-    );
+    $sql$, _schema, _table, _name);
 end;
 $$;

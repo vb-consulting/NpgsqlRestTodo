@@ -7,4 +7,4 @@ COPY package*.json ./
 COPY tsconfig.json ./
 ENV DOCKER=true
 
-RUN bun install
+RUN bun install --production

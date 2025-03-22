@@ -22,6 +22,8 @@ select case _key
     when 'default_roles' then sys.get_current_setting('auth.default_roles', '${AUTH_DEFAULT_ROLES}')
     when 'default_scheme' then sys.get_current_setting('auth.default_scheme', '${AUTH_DEFAULT_SCHEME}')
     when 'require_email_confirmation' then sys.get_current_setting('auth.require_email_confirmation', '${AUTH_REQUIRE_EMAIL_CONFIRMATION}')
+    when 'email_confirmation_code_len' then sys.get_current_setting('auth.email_confirmation_code_len', '${AUTH_EMAIL_CONFIRMATION_CODE_LEN}')
+    when 'email_confirmation_expires_in' then sys.get_current_setting('auth.email_confirmation_expires_in', '${AUTH_EMAIL_CONFIRMATION_EXPIRES_IN}')
     else null
 end;
 $$;

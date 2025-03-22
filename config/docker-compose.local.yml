@@ -5,6 +5,8 @@ services:
       service: npgsqlrest-dev
 
   pgmigrations:
+    environment:
+      - SYS_ENV=development
     extends:
       file: ./base.docker-compose.yml
       service: pgmigrations

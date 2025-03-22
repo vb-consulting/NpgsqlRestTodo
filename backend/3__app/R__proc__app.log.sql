@@ -24,7 +24,14 @@ security definer
 as 
 $$
 begin
-    call sys.ensure_monthly_partition('logs', 'app_log', _log_timestamp);
+    call sys.create_partition('logs', 'app_log', _log_timestamp);
+
+    create procedure sys.create_partition(
+    _schema text,
+    _table text,
+    _timestamp timestamptz = now(),
+    _monthly boolean = true -- If false, daily partition will be created
+) 
 
     insert into logs.app_log (
         at,

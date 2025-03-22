@@ -1,11 +1,11 @@
 
-call sys.drop('sys.generate_confirmation_code');
+call sys.drop('sys.generate_rnd_code');
 
-create or replace function sys.generate_confirmation_code(
+create or replace function sys.generate_rnd_code(
     _length int default 6,
     _include_numbers boolean default true,
     _include_letters boolean default true,
-    _uppercase_only boolean default true
+    _uppercase_only boolean default false
 )
 returns text
 parallel safe

@@ -16,14 +16,14 @@ services:
     extends:
       file: ./base.docker-compose.yml
       service: rollup
-    environment:
-      - NODE_ENV=production
     entrypoint: ["bun", "run", "build"]
     depends_on:
       pgmigrations:
         condition: service_completed_successfully
 
   pgmigrations:
+    environment:
+      - SYS_ENV=production
     extends:
       file: ./base.docker-compose.yml
       service: pgmigrations
