@@ -3,11 +3,13 @@ const fs = require("fs");
 const postcss = require("postcss");
 const tailwindcss = require("@tailwindcss/postcss");
 
-const distPath = "./dist";
-const assetsPath = "./src/assets";
-const styleCss = "./src/style/style.css";
+const distPath = "./app_dist";
+
+const assetsPath = "./app/assets";
+const styleCss = "./app/style/style.css";
 const config = "./config/rollup.config.js";
 const distCss = join(distPath, basename(styleCss)).replace(/\\/g, "/");
+const envModuleOutput = "./app/api/_env.ts";
 
 const error = msg => console.error("\x1b[31m" + msg + "\x1b[0m");
 const warn = msg => console.warn("\x1b[33m" + msg + "\x1b[0m");
@@ -28,6 +30,7 @@ if (process.env.DOCKER === 'true' && process.env.ENABLE_POLLING === 'true') {
 }
 
 async function buildTailwindCSS(production = false) {
+    const startTime = performance.now();
     try {
         const css = fs.readFileSync(styleCss, "utf8");
         const result = await postcss([
@@ -42,15 +45,17 @@ async function buildTailwindCSS(production = false) {
             map: false
         });
         fs.writeFileSync(distCss, result.css);
+        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+        info(`tailwind build: ${styleCss} → ${distCss} in ${duration}s`);
     } catch (err) {
-        error(styleCss + ' → ' + distCss + ' → rebuild failed: ' + err);
+        error('tailwind build: ' + styleCss + ' → ' + distCss + ' → rebuild failed: ' + err);
         return;
     }
-    info(styleCss + ' → ' + distCss);
 }
 
 const d = new Date();
-const buildId = "v"+`${d.getFullYear().toString().slice(2)}${(d.getMonth()+1).toString().padStart(2,'0')}${d.getDate().toString().padStart(2,'0')}${d.getHours().toString().padStart(2,'0')}${d.getMinutes().toString().padStart(2,'0')}${d.getSeconds().toString().padStart(2,'0')}${d.getMilliseconds().toString().padStart(3,'0')}`;
+const buildId = 
+    "v"+`${d.getFullYear().toString().slice(2)}${(d.getMonth()+1).toString().padStart(2,'0')}${d.getDate().toString().padStart(2,'0')}${d.getHours().toString().padStart(2,'0')}${d.getMinutes().toString().padStart(2,'0')}${d.getSeconds().toString().padStart(2,'0')}${d.getMilliseconds().toString().padStart(3,'0')}`;
 
 module.exports = { 
     distPath, 
@@ -63,6 +68,6 @@ module.exports = {
     info, 
     chokidarWatchConfig, 
     buildTailwindCSS,
-    buildId
+    buildId,
+    envModuleOutput
 };
-

@@ -4,19 +4,18 @@ services:
       context: ../
       dockerfile: ./config/Dockerfile.rollup
     volumes: 
-      - ../dist:/app/dist
-      - ../src:/app/src
+      - ../app_dist:/app/dist
+      - ../app:/app/app
     entrypoint: ["bun", "run", "build"]
 
   postgres-prod:
-    image: postgres:17
+    image: timescale/timescaledb-ha:pg17.5-ts2.20.3
     ports:
       - "${PGPORT}:${PGPORT}"
     environment:
       - POSTGRES_USER=${PGUSER}
       - POSTGRES_PASSWORD=${PGPASSWORD}
       - POSTGRES_DB=${PGDATABASE}
-      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
       interval: 5s
@@ -24,6 +23,10 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    command: >-
+      postgres
+      -c shared_preload_libraries=timescaledb,pg_stat_statements
+      -c track_functions=all
     networks:
       - app-network
 
@@ -40,7 +43,7 @@ services:
       - APP_USER=${APP_USER}
       - APP_PASSWORD=${APP_PASSWORD}
       - SKIP_PATTERN=scrap|TESTS
-      - SYS_ENV=production
+      - ENV=production
     entrypoint: [ "pgmigrations", "up" ]
     depends_on:
       postgres-prod:
@@ -98,7 +101,7 @@ services:
       - PGPASSWORD=${APP_PASSWORD}
     volumes:
       - ../logs:/app/logs
-      - ../dist:/app/dist
+      - ../app_dist:/app/dist
     ports:
       - "5000:5000"
     depends_on:
@@ -119,7 +122,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ../dist:/usr/share/nginx/html
+      - ../app_dist:/usr/share/nginx/html
       # For SSL certificates if needed
       # - ./nginx/ssl:/etc/nginx/ssl
     depends_on:

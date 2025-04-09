@@ -85,16 +85,18 @@ async function runTask(worker, skipRunning, ...args) {
     running[worker.description] = true;
     let sql;
     const startTime = Date.now();
-
+    let workerResult = false;
+    
     console.log(
         `\n${logSymbols.info} ${colors.bright}Starting job ${colors.yellow}${worker.description}${colors.reset} [${colors.dim}${jobId}${colors.reset}] at ${formatTime()}`
     );
-    await addDbLog({ message: `STARTED ${jobId}`, context: worker.description });
+    //await addDbLog({ message: `STARTED ${jobId}`, context: worker.description });
     let duration;
     try {
         sql = SQL();
-        await worker(jobId, sql, ...args);
+        workerResult = await worker(jobId, sql, ...args);
         duration = Date.now() - startTime;
+
         console.log(
             `${logSymbols.success} ${colors.bright}${colors.green}COMPLETED${colors.reset} ${colors.yellow}${worker.description}${colors.reset} [${colors.dim}${jobId}${colors.reset}] in ${colors.cyan}${formatDuration(duration)}${colors.reset}`
         );
@@ -139,7 +141,9 @@ async function runTask(worker, skipRunning, ...args) {
         running[worker.description] = false;
         await sql.end();
     }
-    await addDbLog({ message: `COMPLETED ${jobId} (Total runtime: ${duration})`, context: worker.description });
+    if (workerResult) {
+        await addDbLog({ message: `COMPLETED ${jobId} (Total runtime: ${duration})`, context: worker.description });
+    }
     return jobId;
 }
 

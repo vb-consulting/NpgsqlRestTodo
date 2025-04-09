@@ -1,8 +1,8 @@
 {
     "extends": "@tsconfig/svelte/tsconfig.json",
-    "include": ["src/**/*"],
+    "include": ["app/**/*"],
     "exclude": [
-        "backend/*",
+        "database/*",
         "worker/*",
         "config/*",
         "http/*",
@@ -11,6 +11,8 @@
         "node_modules/*",
         "__sapper__/*",
         "dist/*",
+        "app_dist/*",
+        "admin_dist/*",
         "wwwroot/*",
         ".vscode/*",
         ".vs/*",
@@ -26,13 +28,15 @@
         "noFallthroughCasesInSwitch": true,
         "baseUrl": ".",
         "paths": {
-            "$api/*": ["src/api/*"],
-            "$lib/*": ["src/app/lib/*"],
-            "$part/*": ["src/app/part/*"]
+            "$api/*": ["app/api/*"],
+            "$lib/*": ["app/lib/*"],
+            "$part/*": ["app/part/*"]
         },
         "skipLibCheck": true,
         "types": ["svelte"],
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
+        "incremental": true,
+        "tsBuildInfoFile": ".rollup.cache/tsconfig.tsbuildinfo"
     }
 }

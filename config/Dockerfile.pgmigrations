@@ -9,4 +9,4 @@ WORKDIR /app
 RUN bun install -g @vbilopav/pgmigrations@0.43.0
 COPY ./config/pgmigrations.js ./
 COPY ./config/.env ./config/.env
-COPY ./backend ./backend
+COPY ./database ./database

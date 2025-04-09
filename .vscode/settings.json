@@ -5,6 +5,8 @@
         "**/bin/**",
         "**/build/**",
         "**/dist/**",
+        "**/app_dist/**",
+        "**/admin_dist/**",
         "**/doc/**",
         "**/example/**",
         "**/examples/**",
@@ -24,5 +26,8 @@
         "**/vendor/**",
         "**/work/**",
         "**.cmd**"
-    ]
+    ],
+    // "svelte.plugin.svelte.compilerWarnings": {
+    //     "non_reactive_update": "ignore"
+    // }
 }

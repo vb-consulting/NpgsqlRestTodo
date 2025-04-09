@@ -20,7 +20,7 @@ function rollupPlugin(options = {}) {
     return {
         name: 'watch-build-end',
         watchChange(id) {
-            info('build → ' + "./src/" + id.replace(/\\/g, "/").split("/src/")[1]);
+            info('build → ' + "./app/" + id.replace(/\\/g, "/").split("/app/")[1]);
         },
         buildEnd() {
             buildTailwindCSS();
@@ -42,13 +42,14 @@ module.exports = args => {
             name: appObject,
             globals: {}
         },
+        cache: true,
         plugins: [
             !production && rollupPlugin(),
             alias({
                 entries: [
-                    { find: "$api", replacement:  _resolve(__dirname, "../src/api") },
-                    { find: "$lib", replacement:  _resolve(__dirname, "../src/app/lib") },
-                    { find: "$part", replacement:  _resolve(__dirname, "../src/app/part") }
+                    { find: "$api", replacement:  _resolve(__dirname, "../app/api") },
+                    { find: "$lib", replacement:  _resolve(__dirname, "../app/lib") },
+                    { find: "$part", replacement:  _resolve(__dirname, "../app/part") }
                 ]
             }),
             replace({
@@ -59,11 +60,13 @@ module.exports = args => {
                 sourceMap: !production,
                 inlineSources: !production,
                 noEmitOnError: !production,
-                tsconfig: "tsconfig.json"
+                tsconfig: "tsconfig.json",
+                outputToFilesystem: true,
             }),
             svelte({
                 preprocess: sveltePreprocess({ 
                     sourceMap: !production,
+                    cache: true,
                 }),
                 compilerOptions: {
                     // enable run-time checks when not in production
