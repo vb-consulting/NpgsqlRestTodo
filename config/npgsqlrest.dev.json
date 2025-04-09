@@ -3,6 +3,7 @@ https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsett
 */
 {
   "EnvironmentName": "Development",
+  "StartupMessage": "NpgsqlRest Version {2}, Development Configuration, Started in {0}, listening on http://127.0.0.1:5000",
 
   "Config": {
     "ExposeAsEndpoint": "/config"
@@ -59,7 +60,7 @@ https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsett
       "SkipRoutineNames": [],
       "SkipFunctionNames": [],
       "SkipPaths": [],
-      "SkipSchemas": ["public", "pages", "sys"],
+      "SkipSchemas": ["public", "_"],
       "DefaultJsonType": "string",
       "UseRoutineNameInsteadOfEndpoint": false,
       "ExportUrls": true,

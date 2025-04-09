@@ -16,3 +16,6 @@ logs
 bun.lock
 .vscode/launch.json
 worker/.env
+config/external-auth-providers.json
+.cache
+.rollup.cache

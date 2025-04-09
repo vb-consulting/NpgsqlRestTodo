@@ -34,18 +34,5 @@ export default () => ({
         pathname: window.location.pathname,
         protocol: window.location.protocol,
         referrer: document.referrer
-    },
-    performance: {
-        navigation: {
-            type: performance.navigation?.type,
-            redirectCount: performance.navigation?.redirectCount
-        },
-        timing: performance.timing ? {
-            loadEventEnd: performance.timing.loadEventEnd,
-            loadEventStart: performance.timing.loadEventStart,
-            domComplete: performance.timing.domComplete,
-            domInteractive: performance.timing.domInteractive,
-            domContentLoadedEventEnd: performance.timing.domContentLoadedEventEnd
-        } : null
     }
 });
