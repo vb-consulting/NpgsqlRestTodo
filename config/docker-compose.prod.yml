@@ -16,7 +16,6 @@ services:
       - POSTGRES_USER=${PGUSER}
       - POSTGRES_PASSWORD=${PGPASSWORD}
       - POSTGRES_DB=${PGDATABASE}
-      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
       interval: 5s
@@ -24,6 +23,10 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    command: >-
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c track_functions=all
     networks:
       - app-network
 

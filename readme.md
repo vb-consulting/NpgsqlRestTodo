@@ -54,32 +54,34 @@ NpgsqlRestTodo/
 │
 ├── .vscode/                     # VS Code configuration
 │
-├── backend/                     # PostgreSQL database migrations and code
-│   ├── 00__pre_sys/             # System prerequisites
-│   ├── 10__public/              # Public schema objects
-│   ├── 20__post_sys/            # Post-system setup
-│   ├── 30__logs/                # Logging tables and functions
-│   ├── 40__app/                 # Application logic
+├── backend/                     # Backend PostgreSQL code
+│   ├── 00__pre_sys/             # System Functions, Procedure and Template Tables
+│   ├── 10__public/              # Public schema objects (Tables, Types, etc.). Versioned migrations.
+│   ├── 20__post_sys/            # Post-system setup. System Functions and Procedures that depend on publicschema
+│   ├── 30__logs/                # Logging tables in separate schema
+│   ├── 40__app/                 # Application Functions Procedures. They have granted usage but not expsing any APIs
 │   ├── 50__auth/                # Authentication logic
-│   │   └── private/             # Private authentication functions
+│   │   ├─── private/            # Private authentication functions
+│   │   │
+│   │   └─── public/             # Public authentication functions exposed as endpoints
 │   │
 │   └── TESTS/                   # Database tests
 │
 ├── config/                      # Configuration files
 │
-├── dist/                        # Build output directory (empty in repo)
+├── dist/                        # Build output directory (empty in repo and ignored by git)
 │
 ├── http/                        # Auto-generated HTTP request examples for testing
 │
-├── src/                         # Frontend source code
-│   ├── api/                     # Auto-generated API clients
+├── src/                         # Application source code. Root dir contains entry points for compiler. Each .ts have coresponding .js in dist dir
+│   ├── api/                     # Auto-generated API modules. Alias is $api
 │   │
-│   ├── app/                     # Application code
-│   │   ├── lib/                 # Library code
-│   │   └── part/                # UI components
+│   ├── app/                     # Application code. Root dir contains Svelte components for coresponding pages.
+│   │   ├── lib/                 # Library code. Reusable components and reusable modules that are not application specific. Alias is $lib
+│   │   └── part/                # UI components Reusable components and reusable modules that are application specific. Application parts. Alias is $part
 │   │
-│   ├── assets/                  # Static assets
-│   │   └── confirm/             # Email confirmation assets
+│   ├── assets/                  # Static assets. Files are copied on each build.
+│   │   └── confirm/             # Confirmation page
 │   │
 │   └── style/                   # CSS styles
 │
