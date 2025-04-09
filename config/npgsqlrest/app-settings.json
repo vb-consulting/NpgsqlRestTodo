@@ -1,0 +1,35 @@
+/*
+  2.24.0.0
+  ref: https://vb-consulting.github.io/npgsqlrest/config/
+*/
+{
+  "ApplicationName": "Todo",
+  "StartupMessage": "Todo, NpgsqlRest Version {2}, Started in {0}, listening on http://127.0.0.1:5000",
+  "Urls": "http://0.0.0.0:5000/",
+
+  "Auth": {
+    "CookieName": "todo"
+  },
+
+  "Log": {
+    "FilePath": "./logs/todo_app_.txt"
+  },
+
+  "StaticFiles": {
+    "RootPath": "./app_dist"
+  },
+
+  "NpgsqlRest": {
+    "AuthenticationOptions": {
+      "DefaultAuthenticationType": "todo"
+    },
+
+    "HttpFileOptions": {
+      "NamePattern":  "./http/app_{0}_{1}"
+    },
+
+    "ClientCodeGen": {
+      "FilePath": "./src/app/api/{0}Api.ts"
+    }
+  }
+}

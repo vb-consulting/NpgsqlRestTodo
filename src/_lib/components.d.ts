@@ -1,0 +1,1 @@
+type StatusArg = {id: T, position: "left" | "right", index: number};

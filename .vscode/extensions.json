@@ -4,6 +4,7 @@
         "humao.rest-client",
         "svelte.svelte-vscode",
         "spmeesseman.vscode-taskexplorer",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "ms-ossdata.vscode-pgsql"
     ]
 }

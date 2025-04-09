@@ -1,0 +1,103 @@
+services:
+  rollup-app-build:
+    extends:
+      file: service.rollup-app.yml
+      service: rollup-app-build
+    networks:
+      - app-network
+
+  rollup-admin-build:
+    extends:
+      file: service.rollup-admin.yml
+      service: rollup-admin-build
+    networks:
+      - app-network
+
+  postgres-prod:
+    extends:
+      file: service.postgres.yml
+      service: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  migrations:
+    extends:
+      file: service.migrations.yml
+      service: migrations
+    environment:
+      - PGHOST=postgres-prod
+      - ENV=production
+    depends_on:
+      postgres-prod:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  pgbouncer:
+    extends:
+      file: services.pgbouncer.yml
+      service: pgbouncer
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+  worker:
+    extends:
+      file: service.worker.yml
+      service: worker
+    environment:
+      - APP_URL=${APP_PROD_URL}
+      - PGHOST=pgbouncer
+      - PGPORT=${PGBOUNCER_PORT}
+    depends_on:
+      pgbouncer:
+        condition: service_started
+    networks:
+      - app-network
+  
+  admin-service:
+    extends:
+      file: service.admin-service.yml
+      service: admin-service
+    depends_on:
+      pgbouncer:
+        condition: service_started
+      rollup-admin-build:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+  app-service:
+    extends:
+      file: service.app-service.yml
+      service: app-service
+    depends_on:
+      pgbouncer:
+        condition: service_started
+      rollup-app-build:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+  nginx:
+    extends:
+      file: service.nginx.yml
+      service: nginx
+    depends_on:
+      admin-service:
+        condition: service_started
+      app-service:
+        condition: service_started
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

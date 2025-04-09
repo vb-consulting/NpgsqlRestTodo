@@ -3,9 +3,9 @@
     import Key from "lucide-svelte/icons/key-round";
     import Alert from "lucide-svelte/icons/octagon-x";
 
-    import { authLogin } from "$api/authApi";
+    import { authLogin } from "../api/authApi";
     import user from "$lib/user";
-    import getAnalyticsData from "$lib/analyticsData";
+    import getAnalytics from "$lib/analytics";
 
     let emailInput: HTMLInputElement;
     let passwordInput: HTMLInputElement;
@@ -34,7 +34,7 @@
         const result = await authLogin({
             username: emailInput.value,
             password: passwordInput.value,
-            analyticsData: JSON.stringify(getAnalyticsData())
+            analytics: JSON.stringify(getAnalytics())
         });
         working = false;
         if (result.status === 200) {

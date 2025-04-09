@@ -1,0 +1,8 @@
+/*
+  2.24.0.0
+  ref: https://vb-consulting.github.io/npgsqlrest/config/
+*/
+{
+  "EnvironmentName": "Production",
+  "StartupMessage": "Todo Admin, NpgsqlRest Version {2}, Started in {0}, production configuration available at port 8080 (try http://127.0.0.1:8080)"
+}

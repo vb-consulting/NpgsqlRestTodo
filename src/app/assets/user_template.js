@@ -1,0 +1,1 @@
+user = {id: {userId}, name: {userName}, roles: {userRoles}};

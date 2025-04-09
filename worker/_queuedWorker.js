@@ -13,11 +13,16 @@ async function job(jobId, sql, queueId) {
     } else {
         batchSize = 1;
     }
+    let hasJobs = false
     await sql.begin(async sql => {
         for (let item of await sql`select job_queue_id, payload from app.dequeue_job(
             _worker_id => txid_current(), 
             _batch_size => ${batchSize}::int, 
             _job_queue_id => ${queueId}::bigint);`) { 
+
+            if (!hasJobs) {
+                hasJobs = true;
+            }
 
             let queueId = item.job_queue_id;
             let params = item.payload.params;
@@ -32,6 +37,7 @@ async function job(jobId, sql, queueId) {
             }
         }
     });
+    return hasJobs;
 };
 
 job.cron = "*/2 * * * *"; // Every 2 minutes

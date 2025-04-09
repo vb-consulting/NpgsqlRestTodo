@@ -1,5 +1,8 @@
 node_modules
 # .env
+
+app_dist/
+admin_dist/
 dist/
 
 # scrap scripts
@@ -16,3 +19,6 @@ logs
 bun.lock
 .vscode/launch.json
 worker/.env
+external-auth-providers.json
+.cache
+.rollup.cache

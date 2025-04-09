@@ -1,0 +1,22 @@
+x-root: &root "../../"
+
+x-rollup-app-volumes: &rollup-app-volumes
+  - ../../app_dist:/app/app_dist
+  - ../../src/_lib:/app/src/_lib
+  - ../../src/app:/app/src/app
+
+services:
+  rollup-app-watch:
+    build:
+      context: *root
+      dockerfile: ./config/build/Dockerfile
+      target: app-watch
+    volumes: *rollup-app-volumes
+
+  rollup-app-build:
+    build:
+      context: *root
+      dockerfile: ./config/build/Dockerfile
+      target: app-build
+    volumes: *rollup-app-volumes
+
