@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { authConfirmEmailCode } from "$api/authApi";
-    import getAnalyticsData from "$lib/analyticsData";
+    import { authConfirmEmail } from "$api/authApi";
+    import getAnalytics from "$lib/analyticsData";
 
-    let payload: IAuthConfirmEmailCodeRequest = {} as any;
+    let payload: IAuthConfirmEmailRequest = {} as any;
     try {
-      const encoded = window.location.search.slice(1);
+      const encoded = document.location.hash.slice(1);
+      document.location.hash = "";
       if (!encoded) {
           document.location = "/";
       }
@@ -14,16 +15,13 @@
       if (!payload || !payload.code || !payload.email) {
         document.location = "/";
       }
-      payload.analyticsData = JSON.stringify(getAnalyticsData());
-      authConfirmEmailCode(payload).then(() => {
+      payload.analytics = JSON.stringify(getAnalytics());
+      authConfirmEmail(payload).then(() => {
           document.location = "/";
       });
     } catch (e) {
         document.location = "/";
     }
-
-    console.log("Decoded payload:", payload);
-
 </script>
 <div class="min-h-screen bg-base-300 hero">
   <div class="loader-container">

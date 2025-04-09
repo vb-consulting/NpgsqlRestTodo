@@ -42,6 +42,7 @@ module.exports = args => {
             name: appObject,
             globals: {}
         },
+        cache: true,
         plugins: [
             !production && rollupPlugin(),
             alias({
@@ -59,11 +60,13 @@ module.exports = args => {
                 sourceMap: !production,
                 inlineSources: !production,
                 noEmitOnError: !production,
-                tsconfig: "tsconfig.json"
+                tsconfig: "tsconfig.json",
+                outputToFilesystem: true,
             }),
             svelte({
                 preprocess: sveltePreprocess({ 
                     sourceMap: !production,
+                    cache: true,
                 }),
                 compilerOptions: {
                     // enable run-time checks when not in production

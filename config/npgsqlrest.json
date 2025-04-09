@@ -1,9 +1,10 @@
 /*
-https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsettings.json
+https://vb-consulting.github.io/npgsqlrest/config/
 */
 {
-  "ApplicationName": "todo",
+  "ApplicationName": "PgToDo",
   "EnvironmentName": "Production",
+  "StartupMessage": "NpgsqlRest Version {2}, Production Configuration, Started in {0}, listening on http://127.0.0.1:5000",
 
   "Config": {
     "ExposeAsEndpoint": null,
@@ -32,12 +33,43 @@ https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsett
     "Enabled": false
   },
 
+  "DataProtection": {
+    "Enabled": true,
+    "Storage": "Database",
+    "GetAllElementsCommand": "select auth.get_data_protection_keys()",
+    "StoreElementCommand": "call auth.store_data_protection_keys($1,$2)"
+  },
+
   "Auth": {
     "CookieAuth": true,
     "CookieName": "todo",
-    "BearerTokenAuth": false,
+    "CookieValidDays": 365,
     "External": {
-      "Enabled": false
+      "Enabled": true,
+      "SignInHtmlTemplate": "<html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" /><title>Talking to {0}</title><link href=\"/style.css\" rel=\"stylesheet\" /></head><body><div class=\"min-h-screen bg-base-300 hero\"><div class=\"loader-container\"><div class=\"flex flex-col items-center justify-center space-y-6\"><div class=\"loading loading-spinner text-primary w-32\"></div><h2 class=\"text-2xl font-semibol text-primary\">Talking to {0}</h2><p class=\"text-warning\">Please wait...</p></div></div></div>{1}</body></html>",
+      "LoginCommand": "select * from auth.external_login($1,$2,$3,$4,$5)",
+      //
+      // ClientId and ClientSecret are configured in the gitignored config/external-auth-providers.json file
+      //
+      "Google": {
+        //
+        // visit https://console.cloud.google.com/apis/ to configure your google app and get your client id and client secret
+        //
+        "Enabled": true
+      },
+      "LinkedIn": {
+        //
+        // visit https://www.linkedin.com/developers/apps/ to configure your linkedin app and get your client id and client secret
+        //
+        "Enabled": true
+      },
+      "Microsoft": {
+        //
+        // visit https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade to configure your Microsoft app and get your client id and client secret
+        // Documentation: https://learn.microsoft.com/en-us/entra/identity-platform/
+        //
+        "Enabled": true
+      }
     }
   },
 
@@ -67,13 +99,13 @@ https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsett
   "StaticFiles": {
     "Enabled": true,
     "RootPath": "dist",
+    "AutorizePaths": [],
     "ParseContentOptions": {
       "Enabled": true,
-      "FilePaths": [ "/user_template" ],
+      "FilePaths": [ "/user_template.js" ],
       "UserIdTag": "userId",
       "UserNameTag": "userName",
-      "UserRolesTag": "userRoles",
-      "CustomTagToClaimMappings": {}
+      "UserRolesTag": "userRoles"
     }
   },
 
@@ -83,7 +115,7 @@ https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsett
 
   "NpgsqlRest": {
     "ConnectionName": "Default",
-    "IncludeSchemas": ["auth", "todo", "pages"],
+    "IncludeSchemas": ["auth", "todo"],
     "CommentsMode": "OnlyWithHttpTag",
     "UrlPathPrefix": "/api",
     "KebabCaseUrls": true,
@@ -107,12 +139,16 @@ https://github.com/vb-consulting/NpgsqlRest/blob/master/NpgsqlRestClient/appsett
     },
 
     "AuthenticationOptions": {
-      "UserIdParameterName": "_user_id",
-      "UserNameParameterName": "_user_name",
-      "UserRolesParameterName": "_user_roles",
-      "IpAddressParameterName": "_ip_address",
-      "BindParameters": true,
-      "ParseResponse": true
+      "HashColumnName": "hash",
+      "PasswordParameterNameContains": "password",
+      "PasswordVerificationFailedCommand": "call auth.password_verification_failed($1,$2,$3)",
+      "PasswordVerificationSucceededCommand": "call auth.password_verification_succeeded($1,$2,$3)",
+      "UseUserContext": true,
+      "UseUserParameters": false,
+      "UserIdContextKey": "_.user_id",
+      "UserNameContextKey": "_.user_name",
+      "UserRolesContextKey": "_.user_roles",
+      "IpAddressContextKey": "_.ip_address"
     },
 
     "HttpFileOptions": {

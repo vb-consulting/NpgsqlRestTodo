@@ -1,7 +1,9 @@
-FROM vbilopav/npgsqlrest:v2.17.0
+FROM vbilopav/npgsqlrest:v2.22.0
 
 WORKDIR /app
-
 COPY ./config/npgsqlrest.json ./appsettings.json
 
-ENTRYPOINT ["npgsqlrest", "appsettings.json"]
+# Optional copy of external auth providers json file if it exsists
+COPY ./config/external-auth-providers.* ./external-auth-providers.json
+
+ENTRYPOINT ["npgsqlrest", "appsettings.json", "--optional", "external-auth-providers.json"]
