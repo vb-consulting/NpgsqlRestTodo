@@ -2,7 +2,7 @@
     "extends": "@tsconfig/svelte/tsconfig.json",
     "include": ["src/**/*"],
     "exclude": [
-        "backend/*",
+        "database/*",
         "worker/*",
         "config/*",
         "http/*",
@@ -34,5 +34,6 @@
         "types": ["svelte"],
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
+        "incremental": true
     }
 }
