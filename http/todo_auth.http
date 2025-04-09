@@ -1,24 +1,22 @@
 @host=http://0.0.0.0:5000
 
-// function auth.confirm_email_code(
+// function auth.confirm_email(
 //     _code text,
 //     _email text,
-//     _analytics_data jsonb DEFAULT '{}'::jsonb,
-//     _ip_address text DEFAULT NULL::text
+//     _analytics jsonb DEFAULT '{}'::jsonb
 // )
 // returns record
 //
-// comment on function auth.confirm_email_code is 'HTTP POST
-// Anonymous
-// Login';
-POST {{host}}/api/auth/confirm-email-code
+// comment on function auth.confirm_email is 'HTTP POST
+// anonymous
+// login';
+POST {{host}}/api/auth/confirm-email
 content-type: application/json
 
 {
     "code": "ABC",
     "email": "XYZ",
-    "analyticsData": {},
-    "ipAddress": "ABC"
+    "analytics": {}
 }
 
 ###
@@ -26,22 +24,94 @@ content-type: application/json
 // function auth.login(
 //     _username text,
 //     _password text,
-//     _analytics_data jsonb DEFAULT '{}'::jsonb,
-//     _ip_address text DEFAULT NULL::text
+//     _analytics jsonb DEFAULT '{}'::jsonb
 // )
 // returns record
 //
 // comment on function auth.login is 'HTTP POST
-// Login
-// Anonymous';
+// login
+// anonymous';
 POST {{host}}/api/auth/login
 content-type: application/json
 
 {
     "username": "ABC",
     "password": "XYZ",
-    "analyticsData": {},
-    "ipAddress": "ABC"
+    "analytics": {}
+}
+
+###
+
+// function auth.password_reset(
+//     _code text,
+//     _token text,
+//     _email text,
+//     _password text,
+//     _repeat text,
+//     _analytics jsonb DEFAULT '{}'::jsonb,
+//     _hash text DEFAULT NULL::text
+// )
+// returns record
+//
+// comment on function auth.password_reset is 'HTTP POST
+// anonymous
+// security_sensitive
+// parameter _hash is hash of _password';
+POST {{host}}/api/auth/password-reset
+content-type: application/json
+
+{
+    "code": "ABC",
+    "token": "XYZ",
+    "email": "IJK",
+    "password": "ABC",
+    "repeat": "XYZ",
+    "analytics": {},
+    "hash": "ABC"
+}
+
+###
+
+// function auth.password_reset_code(
+//     _email text,
+//     _analytics jsonb
+// )
+// returns text
+//
+// comment on function auth.password_reset_code is 'HTTP POST
+// anonymous
+// security_sensitive';
+POST {{host}}/api/auth/password-reset-code
+content-type: application/json
+
+{
+    "email": "ABC",
+    "analytics": {}
+}
+
+###
+
+// function auth.password_reset_start(
+//     _code text,
+//     _email text,
+//     _token text,
+//     _timezone text,
+//     _analytics jsonb DEFAULT '{}'::jsonb
+// )
+// returns text
+//
+// comment on function auth.password_reset_start is 'HTTP POST
+// anonymous
+// security_sensitive';
+POST {{host}}/api/auth/password-reset-start
+content-type: application/json
+
+{
+    "code": "ABC",
+    "email": "XYZ",
+    "token": "IJK",
+    "timezone": "ABC",
+    "analytics": {}
 }
 
 ###
@@ -50,13 +120,15 @@ content-type: application/json
 //     _email text,
 //     _password text,
 //     _repeat text,
-//     _analytics_data jsonb DEFAULT '{}'::jsonb,
-//     _ip_address text DEFAULT NULL::text
+//     _analytics jsonb DEFAULT '{}'::jsonb,
+//     _hash text DEFAULT NULL::text
 // )
 // returns record
 //
 // comment on function auth.register is 'HTTP POST
-// Anonymous';
+// anonymous
+// security_sensitive
+// parameter _hash is hash of _password';
 POST {{host}}/api/auth/register
 content-type: application/json
 
@@ -64,8 +136,26 @@ content-type: application/json
     "email": "ABC",
     "password": "XYZ",
     "repeat": "IJK",
-    "analyticsData": {},
-    "ipAddress": "XYZ"
+    "analytics": {},
+    "hash": "XYZ"
+}
+
+###
+
+// procedure auth.logout(
+//     _analytics jsonb DEFAULT '{}'::jsonb
+// )
+// returns void
+//
+// comment on function auth.logout is 'HTTP POST
+// anonymous
+// logout
+// security_sensitive';
+POST {{host}}/api/auth/logout
+content-type: application/json
+
+{
+    "analytics": {}
 }
 
 ###
