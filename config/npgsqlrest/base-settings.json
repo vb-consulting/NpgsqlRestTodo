@@ -1,0 +1,208 @@
+/*
+  ref: https://vb-consulting.github.io/npgsqlrest/config/
+*/
+{
+  "EnvironmentName": "Production",
+
+  "ConnectionSettings": {
+    // Use the default environment variable names for connection strings
+    // See https://www.npgsql.org/doc/connection-string-parameters.html#environment-variables
+    "UseEnvVars": true,
+    // Add additional parameter from environment variables to the connection string if it is not already present. 
+    // ref: https://www.npgsql.org/doc/connection-string-parameters.html
+    // Any environment variable that starts with the prefix NGPSQLREST_ in upper snake case will be added to the connection string.
+    // e.g. NGPSQLREST_HOST, NGPSQLREST_CONNECTION_LIFETIME, NGPSQLREST_LOAD_BALANCE_HOSTS, etc.
+    "MatchNpgsqlConnectionParameterNamesWithEnvVarNames": "NGPSQLREST_{0}"
+  },
+
+  // Do not expose the configuration as an endpoint in production. 
+  "Config": {
+    "ExposeAsEndpoint": null
+  },
+
+  //
+  // Store the encrypted data protection keys in the database.
+  // Authentication cookies are using this encryption.
+  // This is required for the authenticated users to stay logged in after the application is restarted (redeployed).
+  //
+  "DataProtection": {
+    "Enabled": true,
+    "Storage": "Database",
+    "GetAllElementsCommand": "select auth.get_data_protection_keys()",
+    "StoreElementCommand": "call auth.store_data_protection_keys($1,$2)",
+    "UseCryptographicAlgorithms": {
+      // Using the default cryptographic algorithms AES_256_CBC and HMACSHA256
+      "Enabled": true
+    }
+  },
+
+  //
+  // Authentication settings: cookie with name "todo" valid for 365 days and external authentication providers: Google, LinkedIn, Microsoft.
+  // External authentication providers are configured in the gitignored config/external-auth-providers.json file.
+  // On successful external login, the user will continue using the cookie authentication.
+  //
+  "Auth": {
+    "CookieAuth": true,
+    // Cookie name used for authentication. Override in specific service (todo and todo-admin).
+    "CookieName": "todo",
+    "CookieValidDays": 365,
+    "External": {
+      "Enabled": true,
+      // HTML template for the page shown while waiting for the external authentication provider to respond.
+      // {0} - provider name, {1} - script content
+      "SignInHtmlTemplate": "<html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" /><title>Talking to {0}</title><link href=\"/style.css\" rel=\"stylesheet\" /></head><body><div class=\"min-h-screen bg-base-300 hero\"><div class=\"loader-container\"><div class=\"flex flex-col items-center justify-center space-y-6\"><div class=\"loading loading-spinner text-primary w-32\"></div><h2 class=\"text-2xl font-semibol text-primary\">Talking to {0}</h2><p class=\"text-warning\">Please wait...</p></div></div></div>{1}</body></html>",
+      // Command executed after the external auth process is completed.
+      // $1 - provider, $2 - email, $3 - name, $4 - json data from provider, $5 - json analytics data
+      // The command should return a standard authentication response, ref: https://vb-consulting.github.io/npgsqlrest/login-endpoints/#login-endpoint-conventions
+      "LoginCommand": "select * from auth.external_login($1,$2,$3,$4,$5)",
+      //
+      // ClientId and ClientSecret are configured in the gitignored config/external-auth-providers.json file
+      //
+      "Google": {
+        //
+        // visit https://console.cloud.google.com/apis/ to configure your google app and get your client id and client secret
+        //
+      },
+      "LinkedIn": {
+        //
+        // visit https://www.linkedin.com/developers/apps/ to configure your linkedin app and get your client id and client secret
+        //
+      },
+      "Microsoft": {
+        //
+        // visit https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade to configure your Microsoft app and get your client id and client secret
+        // Documentation: https://learn.microsoft.com/en-us/entra/identity-platform/
+        //
+      }
+    }
+  },
+
+  //
+  // Default production settings for logging: 
+  // - warning to console
+  // - information to file
+  // - warning to PostgreSQL
+  //
+  // Override for specific environments (change minimal levels in development) and specific service (file names, etc.)
+  //
+  "Log": {
+    "ToConsole": true,
+    "ConsoleMinimumLevel": "Information", // Information and above will be logged to console
+
+    // Rolling file, max 30 MB per file, keep last 30 files
+    "ToFile": true,
+    "FilePath": "./logs/log.txt", // Override for specific service e.g. "./logs/todo_app_.log", "./logs/todo_admin_.log"
+    "FileMinimumLevel": "Information", // Information and above will be logged to file
+    "FileSizeLimitBytes": 30000000,
+    "RetainedFileCountLimit": 30,
+
+    "ToPostgres": true,
+    // $1 - log level text, $2 - message text, $3 - timestamp with tz in utc, $4 - exception text or null, $5 - source context
+    "PostgresCommand": "call app.log($1,$2,$3,$4,$5)",
+    "PostgresMinimumLevel": "Warning" // Warning and above will be logged to PostgreSQL
+  },
+
+  //
+  // We will be serving static files.
+  // 
+  "StaticFiles": {
+    "Enabled": true,
+    "RootPath": "./dist", // Override for specific service e.g. "./app_dist", "./admin_dist"
+
+    "ParseContentOptions": {
+      // Using only one template file (user_template.js) to render the user data:
+      // user = {id: {user_id}, name: {user_name}, roles: {user_roles}};
+      "Enabled": true,
+      "FilePaths": [ "/user_template.js" ]
+    }
+  },
+
+  //
+  // Generated endpoints settings.
+  //
+  "NpgsqlRest": {
+    // Generate endpoints only for routines in the schemas listed below.
+    "IncludeSchemas": ["auth", "profile", "todo"],
+    // Generate endpoints only for routines with HTTP tag annotation by default.
+    "CommentsMode": "OnlyWithHttpTag",
+    // Add prefix to all generated endpoint paths.
+    "UrlPathPrefix": "/api",
+    // Generate kebab case URL paths
+    "KebabCaseUrls": true,
+    // Use camel case for parameter names in the URL paths.
+    "CamelCaseNames": true,
+    // Require authorization for all generated endpoints by default (this can be overridden by the routine's annotation).
+    "RequiresAuthorization": true,
+    // Skip logging endpoint creation information. Overridden in development environment. Useful for debugging.
+    "LogEndpointCreatedInfo": false,
+    // Skip logging endpoint creation properties set in the routine's annotation. Overridden in development environment. Useful for debugging.
+    "LogAnnotationSetInfo": false,
+    // Log connection PostgreSQL notice events always.
+    "LogConnectionNoticeEvents": true,
+    // When logging connection notice events, log the first stack frame and message by default.
+    "LogConnectionNoticeEventsMode": "FirstStackFrameAndMessage",
+    // Log generated commands in production.
+    "LogCommands": true,
+    // Skip logging of command parameters in production. This feature has small performance penalty. Overridden in development environment. Useful for debugging.
+    "LogCommandParameters": false,
+    // Using the default command timeout of 30 seconds. Set to different value in seconds if needed.
+    "CommandTimeout": null,
+    // Send request headers as a parameter value to the command when the parameter name is "_headers".
+    "RequestHeadersMode": "Parameter",
+    // The name of the parameter that will contain the request headers. It must be one of the text or json types.
+    "RequestHeadersParameterName": "_headers",
+    // Do not return the Npgsql exception message in the response in production mode. It may contain sensitive data. Overridden in development environment. Useful for debugging.
+    "ReturnNpgsqlExceptionMessage": false,
+    
+    // Disable the refresh endpoint in production.
+    // The refresh endpoint is used to refresh the generated endpoints without restarting the application.
+    "RefreshOptions": {
+      "Enabled": false
+    },
+
+    "AuthenticationOptions": {
+      // Authentication type used with the Login endpoints to set the authentication type for the new `ClaimsIdentity` created by the login.
+      "DefaultAuthenticationType": "todo",
+      // Name identifier (id) claim type amd the name of a login returned column (case insensitive and underlines ignored) used for identifier (ID).
+      "DefaultUserIdClaimType": "user_id",
+      // Name claim type amd the name of a login returned column used for name.
+      "DefaultNameClaimType": "user_name",
+      // Roles claim type amd the name of a login returned column used for roles array.
+      "DefaultRoleClaimType": "user_roles",
+      // Column name returned by the login command that contains the password hash used to verify the password.
+      "HashColumnName": "hash",
+      // Password parameter name that contains this pattern will be used to verify the password.
+      // This is used to verify the password from the password parameter when login endpoint returns a hash of the password (see HashColumnName).
+      "PasswordParameterNameContains": "password",
+      // Command that is executed when the password verification fails. There are three text parameters:
+      // $1 - authentication scheme, $2 - user id, $3 - user name
+      "PasswordVerificationFailedCommand": "call auth.password_verification_failed($1,$2,$3)",
+      // Command that is executed when the password verification succeeds. There are three text parameters:
+      // $1 - authentication scheme, $2 - user id, $3 - user name
+      "PasswordVerificationSucceededCommand": "call auth.password_verification_succeeded($1,$2,$3)",
+      // User information will be stored in the PostgreSQL session context for each request, and not send by parameters.
+      "UseUserContext": true,
+      "UseUserParameters": false,
+      // Context keys for user information stored in the PostgreSQL session context.
+      "UserIdContextKey": "_.user_id",
+      "UserNameContextKey": "_.user_name",
+      "UserRolesContextKey": "_.user_roles",
+      "IpAddressContextKey": "_.ip_address"
+    },
+
+    // Disable the HTTP file generation in production.
+    "HttpFileOptions": {
+      "Enabled": false
+    },
+
+    // Disable the Client code (TypeScript) generation in production.
+    "ClientCodeGen": {
+      "Enabled": false
+    },
+
+    // This project doesn't use CRUD endpoints generated from tables and views.
+    "CrudSource": {
+      "Enabled": false
+    }
+  }
+}

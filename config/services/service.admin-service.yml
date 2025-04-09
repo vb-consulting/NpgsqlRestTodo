@@ -1,0 +1,50 @@
+x-root: &root "../../"
+
+x-admin-service-dev-volumes: &admin-service-dev-volumes
+  - ../../logs:/app/logs
+  - ../../http:/app/http
+  - ../../src/_lib:/app/src/_lib
+  - ../../src/admin:/app/src/admin
+  - ../../admin_dist:/app/admin_dist
+
+x-admin-service-dev-environment: &admin-service-dev-environment
+  - PGHOST=postgres-dev
+  - PGPORT=${PGPORT}
+  - PGDATABASE=${PGDATABASE}
+  - PGUSER=${ADMIN_USER}
+  - PGPASSWORD=${ADMIN_PASSWORD}
+
+x-admin-service-volumes: &admin-service-volumes
+  - ../../logs:/app/logs
+  - ../../admin_dist:/app/admin_dist
+
+x-admin-service-environment: &admin-service-environment
+  - PGHOST=pgbouncer
+  - PGPORT=${PGBOUNCER_PORT}
+  - PGDATABASE=${PGDATABASE}
+  - PGUSER=${ADMIN_USER}
+  - PGPASSWORD=${ADMIN_PASSWORD}
+
+services:
+  admin-service-dev:
+    build:
+      context: *root
+      dockerfile: ./config/npgsqlrest/Dockerfile
+      target: admin-dev
+    environment: *admin-service-dev-environment
+    volumes: *admin-service-dev-volumes
+    ports:
+      - "8081:8081"
+
+  admin-service:
+    build:
+      context: *root
+      dockerfile: ./config/npgsqlrest/Dockerfile
+      target: admin-prod
+    environment: *admin-service-environment
+    volumes: *admin-service-volumes
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+

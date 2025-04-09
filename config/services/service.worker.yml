@@ -1,0 +1,14 @@
+x-root: &root "../../"
+
+x-worker-environment: &worker-environment
+  - PGPORT=${PGPORT}
+  - PGUSER=${WORKER_USER}
+  - PGPASSWORD=${WORKER_PASSWORD}
+  - PGDATABASE=${PGDATABASE}
+
+services:
+  worker:
+    build:
+      context: *root
+      dockerfile: ./worker/Dockerfile
+    environment: *worker-environment

@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.9-alpine
+FROM oven/bun:1.2.20-alpine
 WORKDIR /app
 COPY /worker/package*.json ./
 RUN bun install

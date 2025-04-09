@@ -1,0 +1,18 @@
+@host=http://0.0.0.0:8080
+
+// function todo.get_items(
+//     _search text
+// )
+// returns table(
+//     id bigint,
+//     title text,
+//     completed boolean,
+//     user_id bigint
+// )
+//
+// comment on function todo.get_items is 'HTTP GET
+// Authorize';
+GET {{host}}/api/todo/get-items?search=ABC
+
+###
+

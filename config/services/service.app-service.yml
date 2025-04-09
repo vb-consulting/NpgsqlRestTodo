@@ -1,0 +1,47 @@
+x-root: &root "../../"
+
+x-app-service-dev-volumes: &app-service-dev-volumes
+  - ../../logs:/app/logs
+  - ../../http:/app/http
+  - ../../src/_lib:/app/src/_lib
+  - ../../src/app:/app/src/app
+  - ../../app_dist:/app/app_dist
+
+x-app-service-dev-environment: &app-service-dev-environment
+  - PGHOST=postgres-dev
+  - PGPORT=${PGPORT}
+  - PGDATABASE=${PGDATABASE}
+  - PGUSER=${APP_USER}
+  - PGPASSWORD=${APP_PASSWORD}
+
+x-app-service-volumes: &app-service-volumes
+  - ../../logs:/app/logs
+  - ../../app_dist:/app/app_dist
+
+x-app-service-environment: &app-service-environment
+  - PGHOST=pgbouncer
+  - PGPORT=${PGBOUNCER_PORT}
+  - PGDATABASE=${PGDATABASE}
+  - PGUSER=${APP_USER}
+  - PGPASSWORD=${APP_PASSWORD}
+
+services:
+  app-service-dev:
+    build:
+      context: *root
+      dockerfile: ./config/npgsqlrest/Dockerfile
+      target: app-dev
+    environment: *app-service-dev-environment
+    volumes: *app-service-dev-volumes
+    ports:
+      - "8080:8080"
+
+  app-service:
+    build:
+      context: *root
+      dockerfile: ./config/npgsqlrest/Dockerfile
+      target: app-prod
+    environment: *app-service-environment
+    volumes: *app-service-volumes
+    ports:
+      - "8080:8080"

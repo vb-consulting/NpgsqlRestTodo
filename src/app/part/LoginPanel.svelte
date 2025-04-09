@@ -1,11 +1,12 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
-    import Login from "$lib/Login.svelte";
-    import Register from "$lib/Register.svelte";
+    import Login from "../lib/Login.svelte";
+    import Register from "../lib/Register.svelte";
+    import ResetPassword from "../lib/ResetPassword.svelte";
 
-    let panel: "login"|"register"|"forgot" = $state("login");
-
+    let {panel = "login"} : {panel?: "login"|"register"|"forgot"} = $props();
     let wrapper: HTMLElement;
+
     function introEnd() {
         // focus first input after animation
         const input = wrapper.querySelector("input[type='email']") as HTMLInputElement;
@@ -35,9 +36,10 @@
                 </div>
             {/if}
             <div class="divider"></div>
-            <div>
-                <button class="btn btn-soft btn-info" onclick={() => { }}>Continue With Google</button>
-                <button class="btn btn-soft btn-info" onclick={() => { }}>Continue With LinkedIn</button>
+            <div class="flex flex-col gap-2">
+                <button class="btn btn-soft btn-info" onclick={() => document.location = "/signin-google"}>Continue With Google</button>
+                <button class="btn btn-soft btn-info" onclick={() => document.location = "/signin-linkedin"}>Continue With LinkedIn</button>
+                <button class="btn btn-soft btn-info" onclick={() => document.location = "/signin-microsoft"}>Continue With Microsoft</button>
             </div>
         </div>
     </div>
@@ -54,7 +56,7 @@
         {:else if panel == "register"}
             <div in:fade onintroend={introEnd}><Register returnToLogin={() => panel="login"} /></div>
         {:else if panel == "forgot"}
-            <div in:fade onintroend={introEnd}>Reset</div>
+            <div in:fade onintroend={introEnd}><ResetPassword returnToLogin={() => panel="login"} /></div>
         {/if}
         </div>
     </div>

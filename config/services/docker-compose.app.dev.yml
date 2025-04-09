@@ -1,0 +1,45 @@
+services:
+  postgres-dev:
+    extends:
+      file: service.postgres.yml
+      service: postgres
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+
+  migrations:
+    extends:
+      file: service.migrations.yml
+      service: migrations
+    environment:
+      - PGHOST=postgres-dev
+      - ENV=development
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+
+  app-service-dev:
+    extends:
+      file: service.app-service.yml
+      service: app-service-dev
+    depends_on:
+        migrations:
+          condition: service_completed_successfully
+
+  worker:
+    extends:
+      file: service.worker.yml
+      service: worker
+    environment:
+      - APP_URL=http://127.0.0.1:8080
+      - PGHOST=postgres-dev
+
+  rollup-app-watch:
+    extends:
+      file: service.rollup-app.yml
+      service: rollup-app-watch
+    depends_on:
+      app-service-dev:
+        condition: service_started
+
+volumes:
+  postgres_data_dev:

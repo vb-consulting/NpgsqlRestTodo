@@ -1,0 +1,15 @@
+x-pgbouncer-environment: &pgbouncer-environment
+  - DATABASE_URL=postgres://${PGBOUNCER_USER}:${PGBOUNCER_PGPASSWORD}@postgres-prod:${PGPORT}/${PGDATABASE}
+  - POOL_MODE=transaction
+  - AUTH_TYPE=scram-sha-256
+  - AUTH_USER=${PGBOUNCER_USER}
+  - AUTH_QUERY=select u, p from app.get_session_password_hash($1) as (u name, p text);
+  - ADMIN_USERS=${PGBOUNCER_USER}
+  - LISTEN_PORT=${PGBOUNCER_PORT}
+
+services:
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.24.1-p1
+    environment: *pgbouncer-environment
+    ports:
+      - "${PGBOUNCER_PORT}:${PGBOUNCER_PORT}"

@@ -1,12 +1,11 @@
 <script lang="ts">
     import Mail from "lucide-svelte/icons/mail";
     import Key from "lucide-svelte/icons/key-round";
-
     import api from "$lib/api";
-    import { authRegister } from "$api/authApi";
-    import getAnalyticsData from "$lib/analyticsData";
-
+    import { authRegister } from "../api/authApi";
+    import getAnalytics from "$lib/analytics";
     import Dialog from "$lib/Dialog.svelte";
+    import passwordInfo from "./passwordInfo";
 
     let { returnToLogin } : { returnToLogin?: ()=>void } = $props();
 
@@ -20,7 +19,7 @@
     let passwordMsg = $state<string>();
     let confirmPasswordMsg = $state<string>();
     let working = $state(false);
-
+    
     // svelte-ignore non_reactive_update
     let successModal: HTMLDialogElement;
 
@@ -63,7 +62,7 @@
             email: emailInput.value,
             password: passwordInput.value,
             repeat: passwordInput.value,
-            analyticsData: JSON.stringify(getAnalyticsData())
+            analytics: JSON.stringify(getAnalytics())
         })) as IAuthRegisterResponse;
         working = false;
 
@@ -88,7 +87,11 @@
     }
 </script>
 
-<div class="form-control">
+<div class="text-justify text-sm mb-4 text-black/60 dark:text-white/70">
+    {passwordInfo()}
+</div>
+
+<div class="form-control max-w-xs">
     <label class="label pb-0.75" class:text-error={emailMsg} for="email">
         <span class="label-text">{emailMsg ?? "Email"}</span>
     </label>
@@ -106,7 +109,7 @@
     </label>
 </div>
 
-<div class="form-control">
+<div class="form-control max-w-xs">
     <label class="label pb-0.75" class:text-error={passwordMsg} for="password">
         <span class="label-text">{passwordMsg ?? "Password"}</span>
     </label>
@@ -124,7 +127,7 @@
     </label>
 </div>
 
-<div class="form-control">
+<div class="form-control max-w-xs">
     <label class="label pb-0.75" class:text-error={confirmPasswordMsg} for="confirmPassword">
         <span class="label-text">{confirmPasswordMsg ?? "Confirm Password"}</span>
     </label>
@@ -150,7 +153,7 @@
     {/if}
 </button>
 
-<Dialog bind:dialog={successModal} disableEscape>
+<Dialog bind:dialog={successModal} disableEscape bodyAppendChild>
     <h3 class="text-lg font-bold">Almost There – Confirm Your Registration!</h3>
     <div class="py-4">
         <p>

@@ -1,0 +1,22 @@
+x-root: &root "../../"
+
+x-rollup-admin-volumes: &rollup-admin-volumes
+  - ../../admin_dist:/app/admin_dist
+  - ../../src/_lib:/app/src/_lib
+  - ../../src/admin:/app/src/admin
+
+services:
+  rollup-admin-watch:
+    build:
+      context: *root
+      dockerfile: ./config/build/Dockerfile
+      target: admin-watch
+    volumes: *rollup-admin-volumes
+
+  rollup-admin-build:
+    build:
+      context: *root
+      dockerfile: ./config/build/Dockerfile
+      target: admin-build
+    volumes: *rollup-admin-volumes
+

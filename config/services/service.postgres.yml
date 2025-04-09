@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg17.5-ts2.21.1
+    ports:
+      - "${PGPORT}:${PGPORT}"
+    environment: 
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command: >-
+      postgres
+      -c shared_preload_libraries=timescaledb,pg_stat_statements
+      -c track_functions=all

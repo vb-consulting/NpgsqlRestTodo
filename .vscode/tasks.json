@@ -1,59 +1,71 @@
 {
     "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "docker",
+            "description": "Select docker compose command arguments to run",
+            "type": "pickString",
+            "options": ["up", "up --build", "up --detach", "up --build --detach"],
+            "default": "up --build"
+        },
+        {
+            "id": "dockerdb",
+            "description": "Select docker compose command arguments to run",
+            "type": "pickString",
+            "options": ["up", "up --detach"],
+            "default": "up"
+        }
+    ],
     "tasks": [
 
         // bun commands (_ prefix to group them at the top of the list)
         { "label": "bun-install", "type": "shell", "command": "bun install" }, 
         { "label": "bun-upgrade", "type": "shell", "command": "bun upgrade" }, 
-        { "label": "bun-upgrade-packages", "type": "shell", "command": "bun run upgrade" }, 
+        { "label": "bun-update", "type": "shell", "command": "bun run update" }, 
+        { "label": "bun-fix", "type": "shell", "command": "bun run fix" }, 
         
         // app (frontend) commands (requires bun install)
         { "label": "app-build", "type": "shell", "command": "bun run build" }, // minimized build
         { "label": "app-watch", "type": "shell", "command": "bun run watch" }, // watch for changes 
         { "label": "app-refresh", "type": "shell", "command": "bun run refresh" }, // regenerate auto generated source file (must have npgsqlrest running in dev mode)
 
-        // db (database) commands (requires bun install and postgresql client tools to run psql)
-        { "label": "db-test", "type": "shell", "command": "bun run db-test" }, // runs tests scripts
-        { "label": "db-up", "type": "shell", "command": "bun run db-up" }, // migrations up
-        { "label": "db-list", "type": "shell", "command": "bun run db-list" }, // list migrations
-        { "label": "db-dump", "type": "shell", "command": "bun run db-dump" }, // migration schema dump
-        { "label": "db-schema", "type": "shell", "command": "bun run db-schema" }, // entire schema dump
-        { "label": "db-history", "type": "shell", "command": "bun run db-history" }, // migration history
-        { "label": "db-config", "type": "shell", "command": "bun run db-config" }, // migrations current config
-        { "label": "db-psql", "type": "shell", "command": "bun run psql" }, // run psql tool (requires .env file)
-        
-        // local docker commands, local docker runs backend only (postgres, migrations up and npgsqlrest in dev mode to generate source code), use bun to build pr watch app
-        { "label": "dockerlocal-up", "type": "shell", "command": "docker compose -f ./config/docker-compose.local.yml -p npgsqlresttodo up" }, 
-        { "label": "dockerlocal-build", "type": "shell", "command": "docker compose -f ./config/docker-compose.local.yml -p npgsqlresttodo up --build"}, 
-        { "label": "dockerlocal-up-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.local.yml -p npgsqlresttodo up -d"}, 
-        { "label": "dockerlocal-build-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.local.yml -p npgsqlresttodo up --build -d"}, 
-        
+        // admin (frontend) commands (requires bun install)
+        { "label": "admin-build", "type": "shell", "command": "bun run build:admin" }, // minimized build
+        { "label": "admin-watch", "type": "shell", "command": "bun run watch:admin" }, // watch for changes 
+        { "label": "admin-refresh", "type": "shell", "command": "bun run refresh:admin" }, // regenerate auto generated source file (must have npgsqlrest running in dev mode)
+
+        // local docker commands, local docker runs backend only (postgres, migrations up and npgsqlrest in dev mode to generate source code), use bun to build or watch app
+        { "label": "docker-local-app", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.app.local.yml -p npgsqlresttodo --env-file ./config/.env ${input:docker}" }, 
+        { "label": "docker-local-admin", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.admin.local.yml -p npgsqlresttodo --env-file ./config/.env ${input:docker}" }, 
         // dev docker commands, dev docker runs backend and frontend (postgres, migrations up, npgsqlrest in dev mode to generate source code and app in watch mode)
-        { "label": "dockerdev-up", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo up" }, 
-        { "label": "dockerdev-build", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo up --build"}, 
-        { "label": "dockerdev-up-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo up -d"}, 
-        { "label": "dockerdev-build-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo up --build -d"}, 
+        { "label": "docker-dev-app", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.app.dev.yml -p npgsqlresttodo --env-file ./config/.env ${input:docker}" }, 
+        { "label": "docker-dev-admin", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.admin.dev.yml -p npgsqlresttodo --env-file ./config/.env ${input:docker}" }, 
 
         // prod docker commands, prod docker runs backend and frontend (postgres, migrations up, npgsqlrest without source gen, and app in minimaze build mode)
-        { "label": "dockerprod-up", "type": "shell", "command": "docker compose -f ./config/docker-compose.prod.yml -p npgsqlresttodo up" }, 
-        { "label": "dockerprod-build", "type": "shell", "command": "docker compose -f ./config/docker-compose.prod.yml -p npgsqlresttodo up --build"}, 
-        { "label": "dockerprod-up-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.prod.yml -p npgsqlresttodo up -d"}, 
-        { "label": "dockerprod-build-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.prod.yml -p npgsqlresttodo up --build -d"}, 
+        { "label": "docker-prod", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.prod.yml -p npgsqlresttodo --env-file ./config/.env ${input:docker}" }, 
         
         // docker database commands, runs only database service
-        { "label": "dockerdb-dev-service-up", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo up postgres-dev" }, 
-        { "label": "dockerdb-dev-service-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo up -d postgres-dev" }, 
-        { "label": "dockerdb-prod-service-up", "type": "shell", "command": "docker compose -f ./config/docker-compose.prod.yml -p npgsqlresttodo up postgres-prod" }, 
-        { "label": "dockerdb-prod-service-detach", "type": "shell", "command": "docker compose -f ./config/docker-compose.prod.yml -p npgsqlresttodo up -d postgres-prod" }, 
+        { "label": "dockerdb-dev-database-service", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env ${input:dockerdb} postgres-dev" }, 
+        { "label": "dockerdb-prod-database-service", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.prod.yml -p npgsqlresttodo --env-file ./config/.env ${input:dockerdb} postgres-prod" }, 
+
+        // db (database) commands (requires bun install and postgresql client tools to run psql)
+        { "label": "localdb-test", "type": "shell", "command": "bun run db-test" }, // runs tests scripts
+        { "label": "localdb-up", "type": "shell", "command": "bun run db-up" }, // migrations up
+        { "label": "localdb-list", "type": "shell", "command": "bun run db-list" }, // list migrations
+        { "label": "localdb-dump", "type": "shell", "command": "bun run db-dump" }, // migration schema dump
+        { "label": "localdb-schema", "type": "shell", "command": "bun run db-schema" }, // entire schema dump
+        { "label": "localdb-history", "type": "shell", "command": "bun run db-history" }, // migration history
+        { "label": "localdb-config", "type": "shell", "command": "bun run db-config" }, // migrations current config
+        { "label": "localdb-psql", "type": "shell", "command": "bun run psql" }, // run psql tool (requires .env file)
 
         // run database migrations commands in docker, no install required, just docker
-        { "label": "dockermigrations-up", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations up' pgmigrations" }, 
-        { "label": "dockermigrations-list", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations up --list' pgmigrations" }, 
-        { "label": "dockermigrations-dump", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations up --dump' pgmigrations" }, 
-        { "label": "dockermigrations-schema", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations schema' pgmigrations" }, 
-        { "label": "dockermigrations-history", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations history' pgmigrations" }, 
-        { "label": "dockermigrations-config", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations config' pgmigrations" }, 
-        { "label": "dockermigrations-psql", "type": "shell", "command": "docker compose -f ./config/docker-compose.dev.yml -p npgsqlresttodo run --entrypoint 'pgmigrations psql' pgmigrations" }, 
+        { "label": "dockerdb-migrations-up", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations up' migrations" }, 
+        { "label": "dockerdb-migrations-list", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations up --list' migrations" }, 
+        { "label": "dockerdb-migrations-dump", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations up --dump' migrations" }, 
+        { "label": "dockerdb-migrations-schema", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations schema' migrations" }, 
+        { "label": "dockerdb-migrations-history", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations history' migrations" }, 
+        { "label": "dockerdb-migrations-config", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations config' migrations" }, 
+        { "label": "dockerdb-migrations-psql", "type": "shell", "command": "docker compose -f ./config/services/docker-compose.dev.yml -p npgsqlresttodo --env-file ./config/.env run --entrypoint 'migrations psql' migrations" }, 
     ]
 }
 

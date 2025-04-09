@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "type": "module",
     "dependencies": {
-        "cron": "^4.1.0",
-        "cronstrue": "^2.56.0",
-        "postgres": "^3.4.5"
+        "cron": "^4.3.3",
+        "cronstrue": "^2.61.0",
+        "postgres": "^3.4.7"
     }
 }

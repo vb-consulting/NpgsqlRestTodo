@@ -1,0 +1,22 @@
+x-root: &root "../../"
+
+x-migrations-environment: &migrations-environment
+  - PGPORT=${PGPORT}
+  - PGUSER=${PGUSER}
+  - PGPASSWORD=${PGPASSWORD}
+  - PGDATABASE=${PGDATABASE}
+  - APP_USER=${APP_USER}
+  - APP_PASSWORD=${APP_PASSWORD}
+  - WORKER_USER=${WORKER_USER}
+  - WORKER_PASSWORD=${WORKER_PASSWORD}
+  - ADMIN_USER=${ADMIN_USER}
+  - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+  - SKIP_PATTERN=scrap|TESTS
+
+services:
+  migrations:
+    build:
+      context: *root
+      dockerfile: ./config/migrations/Dockerfile
+    environment: *migrations-environment
+    entrypoint: [ "pgmigrations", "up" ]

@@ -4,7 +4,7 @@ const path = require("path");
 const context = __filename.split(path.sep).slice(-1)[0];
 
 module.exports = async function (email, code, userId, jobId, queueId) {
-    const url = `${process.env.APP_URL}/confirm?`.replaceAll("//", "/") + Buffer.from(JSON.stringify({code, email})).toString('base64');
+    const url = `${process.env.APP_URL}/confirm#`.replaceAll("//", "/") + Buffer.from(JSON.stringify({code, email})).toString('base64');
     const info = `email: ${email}, code: ${code}, userId: ${userId}, jobId: ${jobId}, queueId: ${queueId}, url: ${url}`;
     try {
         // Simulate sending email

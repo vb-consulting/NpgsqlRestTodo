@@ -1,0 +1,66 @@
+/*
+  ref: https://vb-consulting.github.io/npgsqlrest/config/
+*/
+{
+  "EnvironmentName": "Development",
+
+  "Config": {
+    // Check the running configuration at this endpoint.
+    "ExposeAsEndpoint": "/config"
+  },
+
+  // Log everything with minimum level Information.
+  "Log": {
+    "ConsoleMinimumLevel": "Information",
+    "FileMinimumLevel": "Information",
+    "PostgresMinimumLevel": "Information"
+  },
+
+  //
+  // Generated endpoints settings.
+  //
+  "NpgsqlRest": {
+    // Log endpoint creation information.
+    "LogEndpointCreatedInfo": true,
+    // Log endpoint creation properties set in the routine's annotation.
+    "LogAnnotationSetInfo": true,
+    // Log command parameters.
+    "LogCommandParameters": true,
+    // Return the Npgsql exception message in the response.
+    "ReturnNpgsqlExceptionMessage": true,
+
+    // Send GET request to this path to refresh and regenerate all endpoints based on new schema or new annotations.
+    "RefreshOptions": {
+      "Enabled": true,
+      "Path": "/refresh"
+    },
+
+    //
+    // Enable the .http files generation for testing and development.
+    //
+    "HttpFileOptions": {
+      "Enabled": true,
+      // {0} database name, {1} is the schema name.
+      // This will be overridden by the specific service "./http/admin_{0}_{1}" and "./http/app_{0}_{1}" respectively.
+      "NamePattern": "./http/{0}_{1}"
+    },
+
+    // Enable the Client code (TypeScript) generation in development.
+    "ClientCodeGen": {
+      "Enabled": true,
+      // File path where the generated client code will be saved.
+      // This will be overridden by the specific service "./app/admin/{0}Api.ts" and "./app/api/{0}Api.ts" respectively.
+      // {0} is the schema name.
+      "FilePath": "./app/api/{0}Api.ts",
+
+      // Import the base URL (baseUrl) from this file. Base url is added before the endpoint path.
+      "ImportBaseUrlFrom": "$lib/urls",
+      // Import the parse query function from this file.
+      // This function is used to parse the paramaters object to the query string.
+      "ImportParseQueryFrom": "$lib/urls",
+
+      "ExportUrls": true,
+      "ExportEventSources": true
+    }
+  }
+}

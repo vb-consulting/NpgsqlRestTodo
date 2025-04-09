@@ -1,0 +1,34 @@
+/*
+  ref: https://vb-consulting.github.io/npgsqlrest/config/
+*/
+{
+  "ApplicationName": "Todo Admin",
+  "StartupMessage": "Todo Admin, NpgsqlRest Version {2}, Started in {0}, {3} Configuration, Listening on http://127.0.0.1:8081",
+  "Urls": "http://0.0.0.0:8081/",
+
+  "Auth": {
+    "CookieName": "todo-admin"
+  },
+
+  "Log": {
+    "FilePath": "./logs/todo_admin_.txt"
+  },
+
+  "StaticFiles": {
+    "RootPath": "./admin_dist"
+  },
+
+  "NpgsqlRest": {
+    "AuthenticationOptions": {
+      "DefaultAuthenticationType": "todo-admin"
+    },
+
+    "HttpFileOptions": {
+      "NamePattern": "./http/admin_{0}_{1}"
+    },
+
+    "ClientCodeGen": {
+      "FilePath": "./src/admin/api/{0}Api.ts"
+    }
+  }
+}
