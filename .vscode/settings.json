@@ -24,5 +24,8 @@
         "**/vendor/**",
         "**/work/**",
         "**.cmd**"
-    ]
+    ],
+    "svelte.plugin.svelte.compilerWarnings": {
+        "non_reactive_update": "ignore"
+    }
 }

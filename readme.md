@@ -4,8 +4,8 @@
 
 That's it!
 
-- **Frontend**: Svelte 5, TailwindCSS, and DaisyUI.
-- **Backend**: PostgreSQL 17 with an auto-generated REST API (via NpgsqlRest).
+- **App** is your **Frontend**: Svelte 5, TailwindCSS, and DaisyUI.
+- **Database** is your **Backend**: PostgreSQL 17 with an auto-generated REST API (via NpgsqlRest).
 - **Deployment**: Fully Dockerized, including build and watch processes. Local builds are also supported with the Bun runtime.
 
 ## Installation
@@ -47,39 +47,42 @@ Tasks are organized into 8 categories (see `tasks.json` for details):
 
 ## Database
 
+Backend is implemnted almost exclusivly as PostgreSQL Functions and Procedures.
+
 ## Directory Structure
 
 ```
 NpgsqlRestTodo/
 │
-├── .vscode/                     # VS Code configuration
+├── .vscode/                     # VS Code configuration. Cotnains tasks and extension recommendations.
 │
-├── backend/                     # PostgreSQL database migrations and code
-│   ├── 00__pre_sys/             # System prerequisites
-│   ├── 10__public/              # Public schema objects
-│   ├── 20__post_sys/            # Post-system setup
-│   ├── 30__logs/                # Logging tables and functions
-│   ├── 40__app/                 # Application logic
-│   ├── 50__auth/                # Authentication logic
-│   │   └── private/             # Private authentication functions
+├── database/                    # Backend, PostgreSQL code. This your Backend.
+│   ├── 000__sys/                # System Routines.
+│   ├── 100__public/             # Public schema objects. Versioned migrations.
+│   ├── 200__logs/               # Logging Tables in separate schema
+│   ├── 300__app/                # Application Routines.
+│   ├── 400__auth/               # Authentication Routines.
+│   │   ├─── private/            # Private Authentication Routines
+│   │   │
+│   │   └─── public/             # Public Authentication Routines Exposed as Endpoints
 │   │
 │   └── TESTS/                   # Database tests
 │
 ├── config/                      # Configuration files
 │
-├── dist/                        # Build output directory (empty in repo)
+├── dist/                        # Build output directory (empty in repo and ignored by git)
 │
 ├── http/                        # Auto-generated HTTP request examples for testing
 │
-├── src/                         # Frontend source code
-│   ├── api/                     # Auto-generated API clients
+├── src/                         # Application source code. Root dir contains entry points for compiler. Each .ts have coresponding .js in dist dir
+│   ├── api/                     # Auto-generated API modules. Alias is $api
 │   │
-│   ├── app/                     # Application code
-│   │   ├── lib/                 # Library code
-│   │   └── part/                # UI components
+│   ├── app/                     # Application code. Root dir contains Svelte components for coresponding pages.
+│   │   ├── lib/                 # Library code. Reusable components and reusable modules that are not application specific. Alias is $lib
+│   │   └── part/                # UI components Reusable components and reusable modules that are application specific. Application parts. Alias is $part
 │   │
-│   ├── assets/                  # Static assets
-│   │   └── confirm/             # Email confirmation assets
+│   ├── assets/                  # Static assets. Files are copied on each build.
+│   │   └── confirm/             # Confirmation page
 │   │
 │   └── style/                   # CSS styles
 │

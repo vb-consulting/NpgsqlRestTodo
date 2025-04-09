@@ -8,6 +8,7 @@ const assetsPath = "./src/assets";
 const styleCss = "./src/style/style.css";
 const config = "./config/rollup.config.js";
 const distCss = join(distPath, basename(styleCss)).replace(/\\/g, "/");
+const envModuleOutput = "./src/api/_env.ts";
 
 const error = msg => console.error("\x1b[31m" + msg + "\x1b[0m");
 const warn = msg => console.warn("\x1b[33m" + msg + "\x1b[0m");
@@ -63,6 +64,7 @@ module.exports = {
     info, 
     chokidarWatchConfig, 
     buildTailwindCSS,
-    buildId
+    buildId,
+    envModuleOutput
 };
 

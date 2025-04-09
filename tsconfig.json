@@ -2,7 +2,7 @@
     "extends": "@tsconfig/svelte/tsconfig.json",
     "include": ["src/**/*"],
     "exclude": [
-        "backend/*",
+        "database/*",
         "worker/*",
         "config/*",
         "http/*",

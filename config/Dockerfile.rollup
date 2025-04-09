@@ -1,10 +1,11 @@
-FROM oven/bun:1.2.9-alpine
+FROM oven/bun:1.2.10-alpine
 
 WORKDIR /app
 
 COPY ./config/rollup.build.js ./config/rollup.build.js
 COPY ./config/rollup.config.js ./config/rollup.config.js
 COPY ./config/rollup.shared.js ./config/rollup.shared.js
+COPY ./config/.env ./config/.env
 COPY package.json ./
 COPY tsconfig.json ./
 ENV DOCKER=true
