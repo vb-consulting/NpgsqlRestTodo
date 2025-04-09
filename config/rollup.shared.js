@@ -8,6 +8,7 @@ const assetsPath = "./src/assets";
 const styleCss = "./src/style/style.css";
 const config = "./config/rollup.config.js";
 const distCss = join(distPath, basename(styleCss)).replace(/\\/g, "/");
+const envModuleOutput = "./src/api/_env.ts";
 
 const error = msg => console.error("\x1b[31m" + msg + "\x1b[0m");
 const warn = msg => console.warn("\x1b[33m" + msg + "\x1b[0m");
@@ -28,6 +29,7 @@ if (process.env.DOCKER === 'true' && process.env.ENABLE_POLLING === 'true') {
 }
 
 async function buildTailwindCSS(production = false) {
+    const startTime = performance.now();
     try {
         const css = fs.readFileSync(styleCss, "utf8");
         const result = await postcss([
@@ -42,11 +44,12 @@ async function buildTailwindCSS(production = false) {
             map: false
         });
         fs.writeFileSync(distCss, result.css);
+        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+        info(`tailwind build: ${styleCss} → ${distCss} in ${duration}s`);
     } catch (err) {
-        error(styleCss + ' → ' + distCss + ' → rebuild failed: ' + err);
+        error('tailwind build: ' + styleCss + ' → ' + distCss + ' → rebuild failed: ' + err);
         return;
     }
-    info(styleCss + ' → ' + distCss);
 }
 
 const d = new Date();
@@ -63,6 +66,7 @@ module.exports = {
     info, 
     chokidarWatchConfig, 
     buildTailwindCSS,
-    buildId
+    buildId,
+    envModuleOutput
 };
 

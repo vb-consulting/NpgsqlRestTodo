@@ -1,6 +1,6 @@
 @host=http://0.0.0.0:5000
 
-// function auth.confirm_email_code(
+// function auth.confirm_email(
 //     _code text,
 //     _email text,
 //     _analytics_data jsonb DEFAULT '{}'::jsonb,
@@ -8,10 +8,10 @@
 // )
 // returns record
 //
-// comment on function auth.confirm_email_code is 'HTTP POST
+// comment on function auth.confirm_email is 'HTTP POST
 // Anonymous
 // Login';
-POST {{host}}/api/auth/confirm-email-code
+POST {{host}}/api/auth/confirm-email
 content-type: application/json
 
 {
@@ -46,6 +46,83 @@ content-type: application/json
 
 ###
 
+// function auth.password_reset(
+//     _code text,
+//     _token text,
+//     _email text,
+//     _password text,
+//     _repeat text,
+//     _analytics_data jsonb DEFAULT '{}'::jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns record
+//
+// comment on function auth.password_reset is 'HTTP POST
+// Anonymous
+// SecuritySensitive';
+POST {{host}}/api/auth/password-reset
+content-type: application/json
+
+{
+    "code": "ABC",
+    "token": "XYZ",
+    "email": "IJK",
+    "password": "ABC",
+    "repeat": "XYZ",
+    "analyticsData": {},
+    "ipAddress": "ABC"
+}
+
+###
+
+// function auth.password_reset_code(
+//     _email text,
+//     _analytics_data jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns text
+//
+// comment on function auth.password_reset_code is 'HTTP POST
+// Anonymous
+// SecuritySensitive';
+POST {{host}}/api/auth/password-reset-code
+content-type: application/json
+
+{
+    "email": "ABC",
+    "analyticsData": {},
+    "ipAddress": "IJK"
+}
+
+###
+
+// function auth.password_reset_start(
+//     _code text,
+//     _email text,
+//     _token text,
+//     _timezone text,
+//     _analytics_data jsonb DEFAULT '{}'::jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns text
+//
+// comment on function auth.password_reset_start is 'HTTP POST
+// Anonymous
+// SecuritySensitive';
+POST {{host}}/api/auth/password-reset-start
+content-type: application/json
+
+{
+    "code": "ABC",
+    "email": "XYZ",
+    "token": "IJK",
+    "timezone": "ABC",
+    "analyticsData": {},
+    "ipAddress": "IJK"
+}
+
+###
+
 // function auth.register(
 //     _email text,
 //     _password text,
@@ -56,7 +133,8 @@ content-type: application/json
 // returns record
 //
 // comment on function auth.register is 'HTTP POST
-// Anonymous';
+// Anonymous
+// SecuritySensitive';
 POST {{host}}/api/auth/register
 content-type: application/json
 
@@ -66,6 +144,30 @@ content-type: application/json
     "repeat": "IJK",
     "analyticsData": {},
     "ipAddress": "XYZ"
+}
+
+###
+
+// procedure auth.logout(
+//     _user_id text DEFAULT NULL::text,
+//     _user_name text DEFAULT NULL::text,
+//     _analytics_data jsonb DEFAULT '{}'::jsonb,
+//     _ip_address text DEFAULT NULL::text
+// )
+// returns void
+//
+// comment on function auth.logout is 'HTTP POST
+// Anonymous
+// Logout
+// SecuritySensitive';
+POST {{host}}/api/auth/logout
+content-type: application/json
+
+{
+    "userId": "ABC",
+    "userName": "XYZ",
+    "analyticsData": {},
+    "ipAddress": "ABC"
 }
 
 ###

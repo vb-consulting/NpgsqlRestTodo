@@ -27,7 +27,7 @@ module.exports = {
     finalizePrefix: "TEST",
     
     // root directory of the migrations
-    migrationDir: "./backend/",
+    migrationDir: "./database/",
 
     // ignore file or directory names that match this pattern
     skipPattern: "${SKIP_PATTERN}",
